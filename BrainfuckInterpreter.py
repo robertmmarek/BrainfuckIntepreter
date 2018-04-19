@@ -84,6 +84,18 @@ class BrainFuckSession:
     
     def jump_formard(self):
         if self.memory[self.memory_pointer] == 0:
+            jump_counter = 1
+            for x in range(self.memory_pointer, len(self.code)):
+                self.code_pointer += 1
+                if x == ']':
+                    jump_counter -= 1
+                elif x == '[':
+                    jump_counter += 1
+                    
+                if jump_counter == 0:
+                    self.code_pointer += 1
+                    break
+            
         else:
             self.code_pointer += 1
             if self.code_pointer >= len(self.code):
