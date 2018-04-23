@@ -25,7 +25,7 @@ class BrainFuckSession:
             return True
     
     #code as string
-    def __init__(self, code, input_on=False, output_format='ascii'):
+    def __init__(self, code, input_on=False, output_format='ascii_no_console'):
         self.memory = {0: 0}
         self.code_pointer = 0
         self.memory_pointer = 0
@@ -35,8 +35,9 @@ class BrainFuckSession:
         self.output = ""
         self.code_finished = False
         self.step_counter = 0
+        self.code_validity = BrainFuckSession.check_code_validity(self.code)
         
-        if not BrainFuckSession.check_code_validity(self.code):
+        if not self.code_validity:
             self.code = []
             
     def set_data(self, cell_pointer, value):
@@ -68,6 +69,9 @@ class BrainFuckSession:
         if not self.memory_pointer in self.memory.keys():
             self.memory[self.memory_pointer] =  0
             
+    def get_code_validity(self):
+        return self.code_validity
+            
     def get_current_code_symbol(self):
         return self.code[self.code_pointer]
     
@@ -80,7 +84,7 @@ class BrainFuckSession:
     def decrement_data(self):
         self.set_data(self.memory_pointer, self.memory[self.memory_pointer]-1)
     
-    def output_data(self, output_format='ascii'):
+    def output_data(self, output_format='ascii_no_console'):
         if output_format == 'ascii':
             print(chr(self.memory[self.memory_pointer]), end='')
             self.output += chr(self.memory[self.memory_pointer])
@@ -135,9 +139,8 @@ class BrainFuckSession:
                              '[': lambda: self.jump_formard(),
                              ']': lambda: self.jump_back()}
         
-        max_steps_if = False
         if max_steps != None:
-            max_steps_if = (self.step_counter >= max_steps)
+            self.code_finished = (self.step_counter >= max_steps)
         
         if self.code_finished:
             return self.output
